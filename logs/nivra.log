@@ -1,0 +1,12 @@
+2026-09-11 18:06:52,399 - nivra - INFO - Command result: <nivra.core.command_result.CommandResult object at 0x000002BACC2E5FD0>
+2026-09-11 18:07:06,065 - nivra - ERROR - Process failed: Process failed to start: The system cannot find the file specified.
+2026-09-11 18:15:53,659 - nivra - INFO - Command result | command: python --version, Exit Code: 0, Duration: 0.03 seconds, Success: True
+2026-09-11 18:16:10,460 - nivra - ERROR - Process failed: Process failed to start: The process cannot access the file because it is being used by another process.
+2026-09-11 19:16:56,286 - nivra - INFO - Command result | command: python --version | Exit Code: 0 | Duration: 0.02 seconds | Success: True
+2026-09-11 19:18:31,738 - nivra - ERROR - Process failed: Process failed to start: The system cannot find the file specified.
+2026-09-11 19:53:41,420 - nivra - INFO - Command result | command: python --version | Exit Code: 0 | Duration: 0.02 seconds | Success: True
+2026-09-11 19:54:09,064 - nivra - INFO - Command result | command: pytest | Exit Code: 5 | Duration: 10.34 seconds | Success: False
+2026-09-11 20:21:50,666 - nivra - INFO - Command result | command: python --version | Exit Code: 0 | Duration: 0.02 seconds | Success: True
+2026-09-11 20:22:06,596 - nivra - ERROR - Process failed: Process failed to start: The system cannot find the file specified.
+2026-09-12 21:24:13,928 - nivra - INFO - Command finished | Command: python --version | exit code: 0 | Duration: 0.10201150000011694 | Success: True
+2026-09-12 21:50:04,381 - nivra - INFO - command finished | command=python --version | exit code=0 | duration=0.02s | success=True
