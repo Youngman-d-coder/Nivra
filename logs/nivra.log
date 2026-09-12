@@ -10,3 +10,6 @@
 2026-09-11 20:22:06,596 - nivra - ERROR - Process failed: Process failed to start: The system cannot find the file specified.
 2026-09-12 21:24:13,928 - nivra - INFO - Command finished | Command: python --version | exit code: 0 | Duration: 0.10201150000011694 | Success: True
 2026-09-12 21:50:04,381 - nivra - INFO - command finished | command=python --version | exit code=0 | duration=0.02s | success=True
+2026-09-13 00:22:38,288 - nivra - INFO - command finished | command=python --version | stdout=Python 3.14.5
+ | stderr= | duration=0.02s | exit_code=0 | success=True
+2026-09-13 00:22:41,014 - nivra - ERROR - process failed | error_message=Process failed to start: The system cannot find the file specified.

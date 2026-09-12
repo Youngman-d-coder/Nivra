@@ -1,5 +1,7 @@
 [
     "python --version",
     "nivra_fake_program_xyz",
-    "python --version"
+    "python --version",
+    "gyfutfy",
+    "python -v"
 ]

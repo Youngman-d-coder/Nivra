@@ -1,4 +1,5 @@
 from PySide6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QLabel, QLineEdit, QPlainTextEdit
+from PySide6.QtCore import Qt, QEvent, QObject
 from PySide6.QtGui import QTextCursor
 from nivra.core.command_engine import CommandEngine
 from nivra.core.command_result import CommandResult
@@ -12,6 +13,9 @@ class MainWindow(QMainWindow):
 
         self.engine = engine
         self._trail = trail
+        self._history_draft = ""
+
+        self._history_index = len(self._trail.history)
 
         self.setWindowTitle("Nivra")
         self.central_widget = QWidget()
@@ -32,6 +36,7 @@ class MainWindow(QMainWindow):
         self.pulse.setPlaceholderText("Enter a command...")
         self.main_layout.addWidget(self.pulse)
         self.pulse.returnPressed.connect(self._submit_command)
+        self.pulse.installEventFilter(self)
 
         self.engine.stdout_updated.connect(self._handle_stdout)
         self.engine.stderr_updated.connect(self._handle_stderr)
@@ -44,8 +49,10 @@ class MainWindow(QMainWindow):
         clean_command = command.strip()
         if clean_command:
             self._trail.add(clean_command)
+            self._history_index = len(self._trail.history)
             self.engine.execute(clean_command)
             self.label.setText(f"Command submitted: {clean_command}")
+            self._history_draft = ""
             self.pulse.clear()
 
     def _handle_stdout(self, output: str) -> None:
@@ -63,3 +70,23 @@ class MainWindow(QMainWindow):
     def _handle_process_failed(self, error: str) -> None:
         self.output.appendPlainText(f"Process failed: {error}")
         self.output.moveCursor(QTextCursor.MoveOperation.End)
+
+    def eventFilter(self, watched: QObject, event: QEvent) -> bool:
+        if watched == self.pulse and event.type() == QEvent.Type.KeyPress:
+            if event.key() == Qt.Key.Key_Up:
+                if self._history_index > 0:
+                    if self._history_index == len(self._trail.history):
+                        self._history_draft = self.pulse.text()
+                    self._history_index -= 1
+                    self.pulse.setText(self._trail.history[self._history_index])
+                return True
+            elif event.key() == Qt.Key.Key_Down:
+                if self._history_index < len(self._trail.history):
+                    self._history_index += 1
+                    if self._history_index == len(self._trail.history):
+                        self.pulse.setText(self._history_draft)
+                    else:
+                        self.pulse.setText(self._trail.history[self._history_index])
+                return True
+
+        return super().eventFilter(watched, event)
