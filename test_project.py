@@ -16,16 +16,14 @@ class FakeLogger:
 def test_format_command_result() -> None:
     result = CommandResult(
         command="test_command",
-        stdout="output",
-        stderr="error",
+        stdout="Output text",
+        stderr="Error text",
         duration=1.23,
         exit_code=0,
     )
 
     expected_output = (
         "command=test_command | "
-        "stdout=output | "
-        "stderr=error | "
         "duration=1.23s | "
         "exit_code=0 | "
         "success=True"
@@ -38,15 +36,13 @@ def test_format_command_result_failure() -> None:
     result = CommandResult(
         command="bad_command",
         stdout="",
-        stderr="Something went wrong",
+        stderr="Command not found",
         duration=0.456,
         exit_code=1
     )
 
     expected_output = (
         "command=bad_command | "
-        "stdout= | "
-        "stderr=Something went wrong | "
         "duration=0.46s | "
         "exit_code=1 | "
         "success=False"
@@ -59,8 +55,8 @@ def test_on_command_finished() -> None:
     logger = FakeLogger()
     result = CommandResult(
         command="test_command",
-        stdout="output",
-        stderr="error",
+        stdout="Output text",
+        stderr="",
         duration=1.23,
         exit_code=0,
     )

@@ -4,15 +4,17 @@ from PySide6.QtGui import QTextCursor
 from nivra.core.command_engine import CommandEngine
 from nivra.core.command_result import CommandResult
 from nivra.services.trail_service import TrailService
+from nivra.services.haven_service import HavenService
 
 
 
 class MainWindow(QMainWindow):
-    def __init__(self, engine: CommandEngine, trail: TrailService) -> None:
+    def __init__(self, engine: CommandEngine, trail: TrailService, haven: HavenService) -> None:
         super().__init__()
 
         self.engine = engine
         self._trail = trail
+        self._haven = haven
         self._history_draft = ""
 
         self._history_index = len(self._trail.history)
@@ -50,7 +52,7 @@ class MainWindow(QMainWindow):
         if clean_command:
             self._trail.add(clean_command)
             self._history_index = len(self._trail.history)
-            self.engine.execute(clean_command)
+            self.engine.execute(clean_command, self._haven.workspace)
             self.label.setText(f"Command submitted: {clean_command}")
             self._history_draft = ""
             self.pulse.clear()

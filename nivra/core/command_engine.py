@@ -4,6 +4,7 @@
 
 import time
 from PySide6.QtCore import QObject, QProcess, Signal
+from pathlib import Path
 
 from nivra.core.command_result import CommandResult
 
@@ -77,7 +78,7 @@ class CommandEngine(QObject):
 
         self.process_failed.emit(error_message)
 
-    def execute(self, command: str) -> None:
+    def execute(self, command: str, working_directory: Path | None = None) -> None:
         if self._process.state() is not QProcess.ProcessState.NotRunning:
             return
 
@@ -88,5 +89,10 @@ class CommandEngine(QObject):
         self._stderr = ""
         self._current_command = command
         self._start_time = time.perf_counter()
+
+        if working_directory is not None:
+            self._process.setWorkingDirectory(str(working_directory))
+        else:
+            self._process.setWorkingDirectory("")
 
         self._process.startCommand(command)

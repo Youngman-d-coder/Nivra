@@ -3,5 +3,12 @@
     "nivra_fake_program_xyz",
     "python --version",
     "gyfutfy",
-    "python -v"
+    "python -v",
+    "python -c \"from pathlib import Path; print(Path.cwd())\"",
+    "python -v",
+    "gyfutfy",
+    "python --version",
+    "python -c \"from pathlib import Path; print(Path.cwd())\"",
+    "python --version",
+    "clear"
 ]
