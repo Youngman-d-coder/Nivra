@@ -1,4 +1,4 @@
-from PySide6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QLabel, QLineEdit, QPlainTextEdit
+from PySide6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QLabel, QLineEdit, QPlainTextEdit, QPushButton, QFileDialog, QFileSystemModel, QTreeView
 from PySide6.QtCore import Qt, QEvent, QObject
 from PySide6.QtGui import QTextCursor
 from nivra.core.command_engine import CommandEngine
@@ -17,7 +17,12 @@ class MainWindow(QMainWindow):
         self._haven = haven
         self._history_draft = ""
 
+        self.file_model = QFileSystemModel()
+        self.file_tree = QTreeView()
+
         self._history_index = len(self._trail.history)
+
+        self.workspace_button = QPushButton("Change Workspace")
 
         self.setWindowTitle("Nivra")
         self.central_widget = QWidget()
@@ -26,8 +31,19 @@ class MainWindow(QMainWindow):
         self.main_layout = QVBoxLayout()
         self.central_widget.setLayout(self.main_layout)
 
-        self.label = QLabel("Welcome to Nivra!")
-        self.main_layout.addWidget(self.label)
+        self.workspace_label = QLabel(f"Current Workspace: {self._haven.workspace}")
+        self.status_label = QLabel("Status: Ready")
+
+
+        self.main_layout.addWidget(self.workspace_label)
+        self.main_layout.addWidget(self.status_label)
+        self.main_layout.addWidget(self.workspace_button)
+
+        self.workspace_button.clicked.connect(self._change_workspace)
+
+        self.file_tree.setModel(self.file_model)
+        self.main_layout.addWidget(self.file_tree)
+        self._update_file_tree()
     
         self.output = QPlainTextEdit()
         self.output.setPlaceholderText("Output will appear here...")
@@ -52,10 +68,34 @@ class MainWindow(QMainWindow):
         if clean_command:
             self._trail.add(clean_command)
             self._history_index = len(self._trail.history)
-            self.engine.execute(clean_command, self._haven.workspace)
-            self.label.setText(f"Command submitted: {clean_command}")
             self._history_draft = ""
+
+            self.status_label.setText(f"Status: Executing '{clean_command}'...")
             self.pulse.clear()
+            self._set_busy(True)
+
+            self.engine.execute(clean_command, self._haven.workspace)
+
+    def _update_file_tree(self) -> None:
+        root_index = self.file_model.setRootPath(str(self._haven.workspace))
+        self.file_tree.setRootIndex(root_index)
+
+    def _set_busy(self, busy: bool) -> None:
+        self.pulse.setEnabled(not busy)
+        self.workspace_button.setEnabled(not busy)
+        if not busy:
+            self.pulse.setFocus()
+        
+    def _change_workspace(self) -> None:
+        new_workspace = QFileDialog.getExistingDirectory(self, "Select Workspace Directory", str(self._haven.workspace))
+        if new_workspace:
+            try:
+                self._haven.change_workspace(new_workspace)
+                self.workspace_label.setText(f"Current Workspace: {self._haven.workspace}")
+                self.status_label.setText("Status: Workspace changed")
+                self._update_file_tree()
+            except (FileNotFoundError, NotADirectoryError) as e:
+                self.status_label.setText(str(e))
 
     def _handle_stdout(self, output: str) -> None:
         self.output.appendPlainText(output)
@@ -67,10 +107,19 @@ class MainWindow(QMainWindow):
 
     def _handle_command_finished(self, result: CommandResult) -> None:
         self.output.appendPlainText(f"Command finished | exit code: {result.exit_code} | Success: {result.success}")
+        if result.success:
+            self.status_label.setText(f"Status: Command '{result.command}' executed successfully")
+        else:
+            self.status_label.setText(f"Status: Command '{result.command}' failed with exit code {result.exit_code}")
+
+        self._set_busy(False)
+
         self.output.moveCursor(QTextCursor.MoveOperation.End)
 
     def _handle_process_failed(self, error: str) -> None:
         self.output.appendPlainText(f"Process failed: {error}")
+        self.status_label.setText("Status: Process failed")
+        self._set_busy(False)
         self.output.moveCursor(QTextCursor.MoveOperation.End)
 
     def eventFilter(self, watched: QObject, event: QEvent) -> bool:

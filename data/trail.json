@@ -10,5 +10,11 @@
     "python --version",
     "python -c \"from pathlib import Path; print(Path.cwd())\"",
     "python --version",
-    "clear"
+    "clear",
+    "ls",
+    "python --version",
+    "python -c \"import time; time.sleep(5); print('done')\"",
+    "python --version",
+    "python -c \"import time; time.sleep(5); print('done')\"",
+    "nivra_fake_program_xyz"
 ]
