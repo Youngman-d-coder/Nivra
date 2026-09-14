@@ -42,3 +42,12 @@
 2026-09-13 23:31:51,159 - nivra - INFO - command finished | command=python --version | duration=0.08s | exit_code=0 | success=True
 2026-09-13 23:55:44,696 - nivra - INFO - command finished | command=python --version | duration=0.02s | exit_code=0 | success=True
 2026-09-13 23:56:18,046 - nivra - INFO - command finished | command=python project.py | duration=0.17s | exit_code=1 | success=False
+2026-09-14 21:32:22,454 - nivra - INFO - command finished | command=python --version | duration=1.40s | exit_code=0 | success=True
+2026-09-14 21:32:37,810 - nivra - INFO - command finished | command=python -c "import time; time.sleep(5); print('done')" | duration=5.75s | exit_code=0 | success=True
+2026-09-14 21:32:42,647 - nivra - INFO - command finished | command=python --version | duration=0.25s | exit_code=0 | success=True
+2026-09-14 21:32:55,275 - nivra - INFO - command finished | command=python -c "from pathlib import Path; print(Path.cwd())" | duration=0.19s | exit_code=0 | success=True
+2026-09-14 21:33:05,346 - nivra - ERROR - process failed | error_message=Process failed to start: The system cannot find the file specified.
+2026-09-14 21:33:58,218 - nivra - INFO - command finished | command=python -c "import time; time.sleep(5); print('done')" | duration=5.68s | exit_code=0 | success=True
+2026-09-14 22:32:21,350 - nivra - INFO - command finished | command=python --v | duration=6.16s | exit_code=2 | success=False
+2026-09-14 22:32:32,094 - nivra - INFO - command finished | command=python --version | duration=0.02s | exit_code=0 | success=True
+2026-09-14 22:33:11,134 - nivra - INFO - command finished | command=python (print("hello, world")) | duration=4.01s | exit_code=2 | success=False

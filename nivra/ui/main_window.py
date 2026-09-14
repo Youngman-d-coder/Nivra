@@ -47,6 +47,7 @@ class MainWindow(QMainWindow):
 
         self.workspace_button = QPushButton()
         self.clear_output_button = QPushButton()
+        self.clear_trail_button = QPushButton()
 
         self.file_model = QFileSystemModel()
         self.file_tree = QTreeView()
@@ -65,6 +66,11 @@ class MainWindow(QMainWindow):
 
         self.output_label = QLabel()
 
+        self.pulse_container = QWidget()
+        self.pulse_layout = QVBoxLayout()
+        self.pulse_header_layout = QHBoxLayout()
+        self.pulse_label = QLabel()
+
         # ------------------------------------------------------------------
         # Widget configuration
         # ------------------------------------------------------------------
@@ -75,6 +81,7 @@ class MainWindow(QMainWindow):
 
         self.workspace_button.setText("Change Workspace")
         self.clear_output_button.setText("Clear Output")
+        self.clear_trail_button.setText("Clear Trail")
 
         self.file_tree.setModel(self.file_model)
 
@@ -114,6 +121,18 @@ class MainWindow(QMainWindow):
         self.output_layout.addWidget(self.output)
 
 
+        self.pulse_label.setText("Pulse")
+
+        self.pulse_container.setLayout(self.pulse_layout)
+
+        self.pulse_header_layout.addWidget(self.pulse_label)
+        self.pulse_header_layout.addStretch()
+        self.pulse_header_layout.addWidget(self.clear_trail_button)
+
+        self.pulse_layout.addLayout(self.pulse_header_layout)
+        self.pulse_layout.addWidget(self.pulse)
+
+
         # ------------------------------------------------------------------
         # Layout
         # ------------------------------------------------------------------
@@ -123,7 +142,7 @@ class MainWindow(QMainWindow):
 
         self.main_layout.addWidget(self.main_splitter)
 
-        self.main_layout.addWidget(self.pulse)
+        self.main_layout.addWidget(self.pulse_container)
 
         # ------------------------------------------------------------------
         # UI signal connections
@@ -138,6 +157,10 @@ class MainWindow(QMainWindow):
 
         self.clear_output_button.clicked.connect(
             self.output.clear
+        )
+
+        self.clear_trail_button.clicked.connect(
+            self._clear_trail
         )
 
         self.pulse.returnPressed.connect(
@@ -183,7 +206,10 @@ class MainWindow(QMainWindow):
             self.pulse.clear()
             self._set_busy(True)
 
-            self.output.appendPlainText(f">... {clean_command}")
+
+            if self.output.toPlainText().strip():
+                self.output.appendPlainText("────────────────────────────────────")
+            self.output.appendPlainText(f">. {clean_command}")
             self.output.moveCursor(QTextCursor.MoveOperation.End)
 
             self.engine.execute(clean_command, self._haven.workspace)
@@ -219,6 +245,12 @@ class MainWindow(QMainWindow):
 
             except (FileNotFoundError, NotADirectoryError) as e:
                 self.status_label.setText(f"Status: {e}")
+
+    def _clear_trail(self) -> None:
+        self._trail.clear()
+        self._history_index = len(self._trail.history)
+        self._history_draft = ""
+        self.status_label.setText("Status: Command history cleared")
 
     def _handle_file_double_click(self, index: QModelIndex) -> None:
         file_path = self.file_model.filePath(index)
