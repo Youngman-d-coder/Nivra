@@ -7,6 +7,8 @@ from nivra.ui.main_window import MainWindow
 from nivra.services.logging_service import LoggingService
 from nivra.services.trail_service import TrailService
 from nivra.services.haven_service import HavenService
+from nivra.ui.themes.theme_manager import ThemeManager
+from nivra.ui.themes.qss_renderer import build_stylesheet
 
 
 def main() -> None:
@@ -14,9 +16,16 @@ def main() -> None:
     trail_service = TrailService("data/trail.json")
 
     app = QApplication([])
+
+    theme_manager = ThemeManager()
+    theme = theme_manager.load_builtin_theme("nivra_glass")
+    stylesheet = build_stylesheet(theme)
+    app.setStyleSheet(stylesheet)
+
     engine = CommandEngine()
     haven_service = HavenService(Path.cwd())
     window = MainWindow(engine, trail_service, haven_service)
+
 
     engine.command_finished.connect(lambda result: on_command_finished(result, logging_service))
     engine.process_failed.connect(lambda error_message: on_process_failed(error_message, logging_service))

@@ -121,6 +121,7 @@ if __name__ == "__main__":
     theme = manager.load_builtin_theme("nivra_glass")
     import copy
 
+    # Test the validation
     bad_theme = copy.deepcopy(theme)
     bad_theme["shape"].pop("radius_medium")
     manager._validate_theme(bad_theme)
