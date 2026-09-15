@@ -71,6 +71,10 @@ class MainWindow(QMainWindow):
         self.pulse_header_layout = QHBoxLayout()
         self.pulse_label = QLabel()
 
+        self.workspace_container = QWidget()
+        self.workspace_header_layout = QHBoxLayout()
+        self.workspace_info_layout = QVBoxLayout()
+
         # ------------------------------------------------------------------
         # Widget configuration
         # ------------------------------------------------------------------
@@ -132,14 +136,20 @@ class MainWindow(QMainWindow):
         self.pulse_layout.addLayout(self.pulse_header_layout)
         self.pulse_layout.addWidget(self.pulse)
 
+        self.workspace_info_layout.addWidget(self.workspace_label)
+        self.workspace_info_layout.addWidget(self.status_label)
+
+        self.workspace_header_layout.addLayout(self.workspace_info_layout)
+        self.workspace_header_layout.addStretch()
+        self.workspace_header_layout.addWidget(self.workspace_button)
+
+        self.workspace_container.setLayout(self.workspace_header_layout)
+
 
         # ------------------------------------------------------------------
         # Layout
         # ------------------------------------------------------------------
-        self.main_layout.addWidget(self.workspace_label)
-        self.main_layout.addWidget(self.status_label)
-        self.main_layout.addWidget(self.workspace_button)
-
+        self.main_layout.addWidget(self.workspace_container)
         self.main_layout.addWidget(self.main_splitter)
 
         self.main_layout.addWidget(self.pulse_container)
@@ -189,6 +199,15 @@ class MainWindow(QMainWindow):
         # ------------------------------------------------------------------
         # Initial UI state
         # ------------------------------------------------------------------
+        self.workspace_container.setObjectName("workspaceHeader")
+        self.workspace_label.setObjectName("workspaceTitle")
+        self.status_label.setObjectName("statusText")
+
+        self.output_container.setObjectName("outputPanel")
+        self.pulse_container.setObjectName("pulsePanel")
+        self.output_label.setObjectName("panelTitle")
+        self.pulse_label.setObjectName("panelTitle")
+
         self.haven_splitter.setSizes([300, 700])
         self.main_splitter.setSizes([700, 300])
         self._update_file_tree()
