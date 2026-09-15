@@ -1,0 +1,47 @@
+{
+  "id": "nivra_glass",
+  "name": "Nivra Glass",
+  "version": 1,
+
+  "colors": {
+    "app_background": "#080C12",
+    "surface": "rgba(18, 24, 34, 220)",
+    "surface_alt": "rgba(25, 32, 44, 205)",
+    "surface_hover": "rgba(34, 43, 58, 220)",
+
+    "glass_border": "rgba(255, 255, 255, 28)",
+    "glass_highlight": "rgba(255, 255, 255, 12)",
+    "glass_shadow": "rgba(0, 0, 0, 30)",
+    "text_primary": "#F2F5F8",
+    "text_secondary": "#A7B0BE",
+    "text_muted": "#6F7A89",
+
+    "accent": "#7C8CFF",
+    "accent_hover": "#93A0FF",
+    "accent_soft": "rgba(124, 140, 255, 35)",
+
+    "success": "#64D69A",
+    "warning": "#E7B75B",
+    "error": "#F07178"
+  },
+
+  "shape": {
+    "radius_small": 6,
+    "radius_medium": 10,
+    "radius_large": 16
+  },
+
+  "spacing": {
+    "xs": 4,
+    "sm": 8,
+    "md": 12,
+    "lg": 16,
+    "xl": 24
+  },
+
+  "motion": {
+    "fast": 120,
+    "normal": 180,
+    "slow": 250
+  }
+}
