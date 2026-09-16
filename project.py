@@ -24,7 +24,12 @@ def main() -> None:
 
     engine = CommandEngine()
     haven_service = HavenService(Path.cwd())
-    window = MainWindow(engine, trail_service, haven_service)
+    window = MainWindow(
+        engine,
+        trail_service,
+        haven_service,
+        theme
+    )
 
 
     engine.command_finished.connect(lambda result: on_command_finished(result, logging_service))

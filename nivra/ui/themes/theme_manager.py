@@ -24,7 +24,8 @@ class ThemeManager:
             "colors",
             "shape",
             "spacing",
-            "motion"
+            "motion",
+            "depth",
         }
 
         required_keys = {
@@ -34,7 +35,8 @@ class ThemeManager:
             "colors",
             "shape",
             "spacing",
-            "motion"
+            "motion",
+            "depth",
         }
 
         required_color_keys = {
@@ -76,6 +78,13 @@ class ThemeManager:
             "slow",
         }
 
+        required_depth_keys = {
+            "shadow_blur",
+            "shadow_offset_x",
+            "shadow_offset_y",
+            "shadow_alpha",
+        }
+
         if not isinstance(theme_data, dict):
             raise ValueError("Theme data must be a JSON object.")
 
@@ -115,6 +124,12 @@ class ThemeManager:
                 f"Theme motion is missing required keys: {missing_motion}"
             )
 
+        missing_depth = required_depth_keys - theme_data["depth"].keys()
+        if missing_depth:
+            raise ValueError(
+                f"Theme depth is missing required keys: {missing_depth}"
+            )
+
 
 if __name__ == "__main__":
     manager = ThemeManager()
@@ -124,6 +139,7 @@ if __name__ == "__main__":
     # Test the validation
     bad_theme = copy.deepcopy(theme)
     bad_theme["shape"].pop("radius_medium")
+    bad_theme["colors"].pop("accent")
     manager._validate_theme(bad_theme)
 
     print(theme["name"])

@@ -1,7 +1,7 @@
 from pathlib import Path
-from PySide6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QLabel, QHBoxLayout, QLineEdit, QPlainTextEdit, QPushButton, QFileDialog, QFileSystemModel, QTreeView, QSplitter
+from PySide6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QLabel, QHBoxLayout, QLineEdit, QPlainTextEdit, QPushButton, QFileDialog, QFileSystemModel, QTreeView, QSplitter, QGraphicsDropShadowEffect
 from PySide6.QtCore import Qt, QEvent, QObject, QModelIndex
-from PySide6.QtGui import QTextCursor
+from PySide6.QtGui import QTextCursor, QColor
 from nivra.core.command_engine import CommandEngine
 from nivra.core.command_result import CommandResult
 from nivra.services.trail_service import TrailService
@@ -14,7 +14,8 @@ class MainWindow(QMainWindow):
         self,
         engine: CommandEngine,
         trail: TrailService,
-        haven: HavenService
+        haven: HavenService,
+        theme: dict
     ) -> None:
         super().__init__()
 
@@ -24,6 +25,7 @@ class MainWindow(QMainWindow):
         self.engine = engine
         self._trail = trail
         self._haven = haven
+        self._theme = theme
 
         self._history_index = len(self._trail.history)
         self._history_draft = ""
@@ -48,6 +50,7 @@ class MainWindow(QMainWindow):
         self.workspace_button = QPushButton()
         self.clear_output_button = QPushButton()
         self.clear_trail_button = QPushButton()
+        self.stop_button = QPushButton()
 
         self.file_model = QFileSystemModel()
         self.file_tree = QTreeView()
@@ -135,6 +138,7 @@ class MainWindow(QMainWindow):
 
         self.pulse_layout.addLayout(self.pulse_header_layout)
         self.pulse_layout.addWidget(self.pulse)
+        self.pulse_layout.addWidget(self.stop_button)
 
         self.workspace_info_layout.addWidget(self.workspace_label)
         self.workspace_info_layout.addWidget(self.status_label)
@@ -144,6 +148,12 @@ class MainWindow(QMainWindow):
         self.workspace_header_layout.addWidget(self.workspace_button)
 
         self.workspace_container.setLayout(self.workspace_header_layout)
+        self._pulse_glow = self._create_pulse_glow()
+        self.pulse_container.setGraphicsEffect(
+            self._pulse_glow
+        )
+        self.stop_button.setText("Stop")
+        self.stop_button.setEnabled(False)
 
 
         # ------------------------------------------------------------------
@@ -177,6 +187,8 @@ class MainWindow(QMainWindow):
             self._submit_command
         )
 
+        self.stop_button.clicked.connect(self.engine.stop)
+
         # ------------------------------------------------------------------
         # CommandEngine signal connections
         # ------------------------------------------------------------------
@@ -196,6 +208,10 @@ class MainWindow(QMainWindow):
             self._handle_process_failed
         )
 
+        self.engine.command_cancelled.connect(
+            self._handle_command_cancelled
+        )
+
         # ------------------------------------------------------------------
         # Initial UI state
         # ------------------------------------------------------------------
@@ -212,6 +228,20 @@ class MainWindow(QMainWindow):
         self.main_splitter.setSizes([700, 300])
         self._update_file_tree()
 
+
+    def _create_pulse_glow(self) -> QGraphicsDropShadowEffect:
+        colors = self._theme["colors"]
+        depth = self._theme["depth"]
+
+        glow_color = QColor(colors["accent"])
+        glow_color.setAlpha(45)
+
+        glow = QGraphicsDropShadowEffect(self)
+        glow.setBlurRadius(depth["shadow_blur"])
+        glow.setOffset(0, 0)
+        glow.setColor(glow_color)
+
+        return glow
 
     def _submit_command(self) -> None:
         command = self.pulse.text()
@@ -232,6 +262,12 @@ class MainWindow(QMainWindow):
             self.output.moveCursor(QTextCursor.MoveOperation.End)
 
             self.engine.execute(clean_command, self._haven.workspace)
+            
+    def _handle_command_cancelled(self) -> None:
+        self.output.appendPlainText("■ Cancelled")
+        self.status_label.setText("Status: Cancelled")
+        self._set_busy(False)
+        self.output.moveCursor(QTextCursor.MoveOperation.End)
 
     def _update_file_tree(self) -> None:
         root_index = self.file_model.setRootPath(str(self._haven.workspace))
@@ -240,6 +276,8 @@ class MainWindow(QMainWindow):
     def _set_busy(self, busy: bool) -> None:
         self.pulse.setEnabled(not busy)
         self.workspace_button.setEnabled(not busy)
+        self.stop_button.setEnabled(busy)
+
         if not busy:
             self.pulse.setFocus()
         

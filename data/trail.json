@@ -1,3 +1,6 @@
 [
-    "python --version"
+    "python --version",
+    "python -c \"import time; time.sleep(30)\"",
+    "echo Nivra is still alive",
+    "python -c \"import time; time.sleep(30)\""
 ]

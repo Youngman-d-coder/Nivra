@@ -43,5 +43,12 @@
     "fast": 120,
     "normal": 180,
     "slow": 250
+  },
+
+  "depth": {
+    "shadow_blur": 40,
+    "shadow_offset_x": 0,
+    "shadow_offset_y": 10,
+    "shadow_alpha": 180
   }
 }
