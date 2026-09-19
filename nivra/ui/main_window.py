@@ -225,7 +225,7 @@ class MainWindow(QMainWindow):
         self.pulse_label.setObjectName("panelTitle")
 
         self.haven_splitter.setSizes([300, 700])
-        self.main_splitter.setSizes([700, 300])
+        self.main_splitter.setSizes([300, 700])
         self._update_file_tree()
 
 
@@ -243,26 +243,134 @@ class MainWindow(QMainWindow):
 
         return glow
 
+    # ------------------------------------------------------------------
+    # Pulse command submission
+    # ------------------------------------------------------------------
     def _submit_command(self) -> None:
+        """
+        Submit the current Pulse command.
+
+        Nivra handles its own built-in commands first. Every other
+        command is passed to CommandEngine and therefore to the
+        operating system's native shell.
+        """
         command = self.pulse.text()
         clean_command = command.strip()
-        if clean_command:
-            self._trail.add(clean_command)
-            self._history_index = len(self._trail.history)
-            self._history_draft = ""
 
-            self.status_label.setText(f"Status: Executing '{clean_command}'...")
-            self.pulse.clear()
-            self._set_busy(True)
+        if not clean_command:
+            return
 
+        self._trail.add(clean_command)
+        self._history_index = len(self._trail.history)
+        self._history_draft = ""
 
-            if self.output.toPlainText().strip():
-                self.output.appendPlainText("────────────────────────────────────")
-            self.output.appendPlainText(f">. {clean_command}")
-            self.output.moveCursor(QTextCursor.MoveOperation.End)
+        self.pulse.clear()
 
-            self.engine.execute(clean_command, self._haven.workspace)
-            
+        if self.output.toPlainText().strip():
+            self.output.appendPlainText(
+                "────────────────────────────────────"
+            )
+
+        self.output.appendPlainText(
+            f">. {clean_command}"
+        )
+        self.output.moveCursor(
+            QTextCursor.MoveOperation.End
+        )
+
+        if self._handle_builtin_command(clean_command):
+            return
+
+        self.status_label.setText(
+            f"Status: Executing '{clean_command}'..."
+        )
+
+        self._set_busy(True)
+
+        self.engine.execute(
+            clean_command,
+            self._haven.workspace
+        )
+
+    # ------------------------------------------------------------------
+    # Nivra built-in commands
+    # ------------------------------------------------------------------
+    def _handle_builtin_command(
+        self,
+        command: str
+    ) -> bool:
+        """
+        Handle commands that must change Nivra's own application state.
+
+        Returns True when Nivra handled the command itself.
+        Returns False when the command should be sent to CommandEngine.
+        """
+        clean_command = command.strip()
+        lower_command = clean_command.lower()
+
+        if lower_command in {"clear", "cls"}:
+            self.output.clear()
+            self.status_label.setText(
+                "Status: Output cleared"
+            )
+            return True
+
+        if (
+            lower_command == "cd"
+            or lower_command.startswith("cd ")
+        ):
+            raw_path = clean_command[2:].strip()
+
+            if raw_path:
+                raw_path = (
+                    raw_path
+                    .strip('"')
+                    .strip("'")
+                )
+
+                target = Path(
+                    raw_path
+                ).expanduser()
+
+                if not target.is_absolute():
+                    target = (
+                        self._haven.workspace
+                        / target
+                    )
+            else:
+                target = Path.home()
+
+            try:
+                self._haven.change_workspace(
+                    target.resolve()
+                )
+            except (
+                FileNotFoundError,
+                NotADirectoryError,
+                OSError
+            ) as error:
+                self.status_label.setText(
+                    f"Status: {error}"
+                )
+                return True
+
+            self.workspace_label.setText(
+                f"Current Workspace: "
+                f"{self._haven.workspace}"
+            )
+
+            self.file_preview.clear()
+            self._update_file_tree()
+
+            self.status_label.setText(
+                f"Status: Workspace changed to "
+                f"{self._haven.workspace}"
+            )
+
+            return True
+
+        return False
+
     def _handle_command_cancelled(self) -> None:
         self.output.appendPlainText("■ Cancelled")
         self.status_label.setText("Status: Cancelled")

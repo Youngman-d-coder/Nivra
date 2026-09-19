@@ -57,3 +57,21 @@
 2026-09-16 06:35:57,970 - nivra - INFO - command finished | command=python -c "import time; time.sleep(30)" | duration=25.74s | exit_code=62097 | success=False
 2026-09-16 06:50:54,932 - nivra - ERROR - process failed | error_message=Process failed to start: The system cannot find the file specified.
 2026-09-16 06:51:59,568 - nivra - INFO - command finished | command=python -c "import time; time.sleep(30)" | duration=30.04s | exit_code=0 | success=True
+2026-09-19 11:10:08,996 - nivra - INFO - command finished | command=ls | duration=3.52s | exit_code=0 | success=True
+2026-09-19 11:10:49,388 - nivra - INFO - command finished | command=ls | duration=0.41s | exit_code=0 | success=True
+2026-09-19 11:11:00,516 - nivra - INFO - command finished | command=cd nivra | duration=0.45s | exit_code=0 | success=True
+2026-09-19 11:11:08,612 - nivra - INFO - command finished | command=ls | duration=0.43s | exit_code=0 | success=True
+2026-09-19 12:18:45,870 - nivra - INFO - command finished | command=ls | duration=8.13s | exit_code=0 | success=True
+2026-09-19 12:20:27,562 - nivra - INFO - command finished | command=code hello.py | duration=2.90s | exit_code=0 | success=True
+2026-09-19 12:32:54,300 - nivra - INFO - command finished | command=pwd
+ls
+mkdir nivra_shell_test
+ls
+cd nivra_shell_test
+pwd
+echo Hello from Nivra
+cd ..
+pwd
+python --version
+git status | duration=3.22s | exit_code=0 | success=True
+2026-09-19 12:34:19,228 - nivra - INFO - command finished | command=rmdir nivra_shell_test | duration=0.39s | exit_code=0 | success=True
