@@ -1,0 +1,19 @@
+# Python
+__pycache__/
+*.py[cod]
+
+# Virtual environments
+.venv/
+venv/
+
+# Test cache
+.pytest_cache/
+
+# Nivra runtime data
+logs/
+data/trail.json
+
+# OS/editor files
+.DS_Store
+Thumbs.db
+.vscode/
